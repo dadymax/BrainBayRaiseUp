@@ -1173,6 +1173,7 @@ void update_statusinfo(void)
 LRESULT CALLBACK StatusDlgHandler( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
 	WINDOWPLACEMENT  wndpl;
+		//wndpl.length=sizeof(WINDOWPLACEMENT);
 	int t;
 	char str[21];
 	HWND hTrack_Bar;
@@ -1182,9 +1183,9 @@ LRESULT CALLBACK StatusDlgHandler( HWND hDlg, UINT message, WPARAM wParam, LPARA
 	{
 		case WM_INITDIALOG:
 				GetWindowPlacement(ghWndMain, &wndpl);
-				SetWindowPos(hDlg, HWND_BOTTOM, wndpl.rcNormalPosition.left+4, wndpl.rcNormalPosition.bottom-40, 
-				wndpl.rcNormalPosition.right-wndpl.rcNormalPosition.left-8,35, SWP_NOACTIVATE|SWP_NOZORDER);
-				
+				SetWindowPos(hDlg, HWND_BOTTOM, wndpl.rcNormalPosition.left+4, wndpl.rcNormalPosition.bottom -40, 
+				wndpl.rcNormalPosition.right-wndpl.rcNormalPosition.left-8,135, SWP_NOACTIVATE|SWP_NOZORDER);
+				//SetWindowPos(hDlg, HWND_BOTTOM, 0, 100, 100,50,SWP_NOACTIVATE|SWP_NOZORDER);
 				hTrack_Bar=GetDlgItem(hDlg,IDC_SESSIONPOS);
 				SendMessage(hTrack_Bar,TBM_SETRANGE,TRUE,MAKELONG(0, 1000));
 				SendMessage(hTrack_Bar,TBM_SETPOS,TRUE,(LONG)0);
@@ -1860,16 +1861,19 @@ LONG get_sliderpos(LONG samplepos)
 void update_status_window(void)
 {
 	WINDOWPLACEMENT  wndpl;
-	int rm,lm,bm,bh;
+	int rm;// border width to center status box
+	int lm;// padding from left side of main window 
+	int bm;// padding from bottom side of main window
+	int bh;// height of status box
 
 	if (GLOBAL.os_version==1)	{   // Windows-7 : other dialog size
 		if (GLOBAL.session_length==0)  {
 			lm=8;rm=16;
-			bm=48;bh=41;
+			bm=48+30;bh=41 + 30;
 		}
 		else {
 			lm=8;rm=16;
-			bm=83;bh=76;
+			bm=83+30;bh=76 + 30;
 		}
 	}
 	else	{
