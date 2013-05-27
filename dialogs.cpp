@@ -1169,6 +1169,7 @@ void update_statusinfo(void)
 	}
 }
 
+int IsLinkExist(BASE_CL * obj1, BASE_CL * obj2);
 
 LRESULT CALLBACK StatusDlgHandler( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
@@ -1328,6 +1329,39 @@ LRESULT CALLBACK StatusDlgHandler( HWND hDlg, UINT message, WPARAM wParam, LPARA
                      if (ghWndSettings==NULL) ghWndSettings=CreateDialog(hInst, (LPCTSTR)IDD_SETTINGSBOX, ghWndStatusbox, (DLGPROC)SETTINGSDlgHandler);
 						 else SetForegroundWindow(ghWndSettings);
 					break;
+
+				case IDC_REMOVESELECTED:
+						BASE_CL * readerObj = NULL;
+						BASE_CL * writerObj = NULL;
+						for (t=0; t<GLOBAL.objects; t++) 
+						{
+							if (objects[t]->type == OB_EDF_READER) 
+								readerObj = objects[t];
+							else
+							if (objects[t]->type == OB_EDF_WRITER) 
+								writerObj = objects[t];
+						}
+						if (!(readerObj && writerObj && IsLinkExist(readerObj, writerObj))) 
+						{
+							MessageBox(ghWndMain, "Delete function work only with EDF reader and EDF writer enabled and linked somehow.", "Error", MB_OK | MB_ICONINFORMATION);
+							break;
+						}
+						int retvalue = MessageBox(NULL, "Do you really want delete selected chunk?", "Are you sure?", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2);
+						if (retvalue == IDNO) break;
+						REMOVE.deletebegin = GLOBAL.session_start;
+						REMOVE.deleteend = GLOBAL.session_end;
+						REMOVE.deletemode = 1;
+						SendMessage (hDlg,WM_COMMAND,IDC_RESETBUTTON,0); //clear position and other...
+						/*Copypaste from IDC_FLY*/
+						if ((GLOBAL.session_length>0)&&(GLOBAL.session_start!=GLOBAL.session_end))
+						{
+							set_session_pos(0);
+							GLOBAL.fly=1;
+							if (!GLOBAL.running) SendMessage (hDlg,WM_COMMAND,IDC_RUNSESSION,0);
+						}
+
+
+					break;
 			}
 			return TRUE;
 
@@ -1362,6 +1396,29 @@ LRESULT CALLBACK StatusDlgHandler( HWND hDlg, UINT message, WPARAM wParam, LPARA
 }
 
 
+int IsLinkExist(BASE_CL * obj1, BASE_CL * obj2)
+{
+	int count = obj1->outports;
+	int res = 0; //result = 0 - no link, = 1 - link exist.
+	if (count < 1) return 0; //no outports - no link
+	LINKStruct currentLink;
+
+	for (int i = 0; (i < count) && !res; i++)
+	{
+		
+		currentLink  = obj1->out[i];
+		if (currentLink.to_object == -1) continue; //if Link does'nt exist - skip
+
+		if (objects[currentLink.to_object] == obj2)  //Link found!
+			res = 1;
+		else
+		{
+			res = IsLinkExist(objects[currentLink.to_object], obj2); //Recurce into. If there loop - bad thing happen. Need improve.
+		}
+	}
+
+	return res;
+}
 
 
 int find_min_to_line(int x, int y,int x1, int y1, int x2, int y2)

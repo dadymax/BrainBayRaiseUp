@@ -57,6 +57,7 @@ void process_packets(void)
 	if (GLOBAL.session_length && (TIMING.packetcounter>=GLOBAL.session_end))
 	{
 		int sav_fly=GLOBAL.fly;
+		REMOVE.deletemode = 0;
 		SendMessage(ghWndStatusbox,WM_COMMAND,IDC_STOPSESSION,0);
 		
 		TIMING.packetcounter= GLOBAL.session_start;
@@ -71,7 +72,10 @@ void process_packets(void)
 	}
 	else
 	{
-
+		LONG curpos = get_sliderpos(TIMING.packetcounter);
+		if (REMOVE.deletemode && 
+			(( curpos < REMOVE.deletebegin) ||
+			( curpos > REMOVE.deleteend)))
 		for (t=0;t<GLOBAL.objects;t++)
 		 if (objects[t]) objects[t]->work();
 		
@@ -107,7 +111,7 @@ void CALLBACK TimerProc(UINT uID,UINT uMsg,DWORD dwUser,DWORD dw1,DWORD dw2)
 			TIMING.readtimestamp+=TTY.packettime;
 			TIMING.acttime=TIMING.readtimestamp;
 
-			if(CAPTFILE.do_read&&(CAPTFILE.offset<=TIMING.packetcounter)&&(CAPTFILE.offset+CAPTFILE.length>TIMING.packetcounter))
+			if(CAPTFILE.do_read && (CAPTFILE.offset<=TIMING.packetcounter) && (CAPTFILE.offset+CAPTFILE.length>TIMING.packetcounter))
 			{
 				long tmp;
 				tmp=TIMING.packetcounter;

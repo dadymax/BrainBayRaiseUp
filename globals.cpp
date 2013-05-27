@@ -108,6 +108,7 @@ struct CAPTFILEStruct	    CAPTFILE;
 struct MIDIPORTStruct       MIDIPORTS[MAX_MIDIPORTS];
 struct SCALEStruct          LOADSCALE;
 struct TIMINGStruct         TIMING;
+struct DELETEstruct			REMOVE;
 
 char objnames[OBJECT_COUNT][20]      = { OBJNAMES };
 char dimensions[10][10]      = {"uV","mV","V","Hz","%","DegC","DegF","uS","kOhm","BPM" };
@@ -243,7 +244,8 @@ void create_object(int type)
 							 actobject->object_size=sizeof(DELAYOBJ);break;
 		case OB_LIMITER:      actobject=new LIMITEROBJ(GLOBAL.objects); 
 							 actobject->object_size=sizeof(LIMITEROBJ);break;
-		
+//		case OB_EDF_EDITOR:      actobject=new EDF_EDITOR(GLOBAL.objects); 
+//			actobject->object_size=sizeof(LIMITEROBJ);break;
 	}
 	if (actobject)
 	{

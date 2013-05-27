@@ -128,6 +128,7 @@ extern "C" {
 #define OB_DIFFERENTIATE 52
 #define OB_DELAY        53
 #define OB_LIMITER      54
+//#define OB_EDF_EDITOR	55
 
 #define OBJECT_COUNT 55
 
@@ -145,7 +146,7 @@ extern "C" {
 				 "SKINDIALOG", "FILEWRITE", "DEVIATION", "MEDIAPLAYER", "KEYSTRIKE", \
 				 "PEAKDETECT", "SPELLER", "MARTINI", "FILEREAD", "PORT_IO", \
 				 "ARRAY-3600", "COMREADER", "NEUROBIT", "MIN", "MAX", "ROUND", \
-				 "DIFFERENTIATE", "DELAY", "LIMITER"
+				 "DIFFERENTIATE", "DELAY", "LIMITER"//, "EDF-EDITOR"
 //
 // use the main menu handler in brainbay.cpp 
 // to call the 'create_object'-function (located in in gloabals.cpp)
@@ -278,11 +279,18 @@ extern struct FILTERTYPEStruct	   FILTERTYPE[FILTERTYPES];
 extern struct PASSTYPEStruct	   PASSTYPE[PASSTYPES];
 extern struct SCALEStruct          LOADSCALE;
 extern struct TIMINGStruct         TIMING;
+extern struct DELETEstruct		   REMOVE;
 
 //
 //    DATA STRUCTURES
 //
 
+typedef struct DELETEstruct
+{
+	int deletemode;
+	int deletebegin;
+	int deleteend;
+} DELETEstruct;
 
 typedef struct GLOBALStruct
 {
@@ -309,6 +317,7 @@ typedef struct GLOBALStruct
 	int session_sliding;
 
 	int fly;
+	int deletemode;
 	int run_exception;
 
 	int showdesign;
